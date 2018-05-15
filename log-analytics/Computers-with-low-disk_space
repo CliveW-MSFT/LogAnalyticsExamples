@@ -1,0 +1,11 @@
+#let #perf #render
+
+// Disk space low - needs Logical Disk Perf counter
+
+let pctdiskspace = 20;  // set disk space low value
+Perf 
+| where ObjectName == "LogicalDisk" and CounterName == "% Free Space" | summarize FreeSpace = min(CounterValue) by Computer, InstanceName 
+| where InstanceName contains ":"  // look for the colon in the drive letter, exclude all other results  
+| where FreeSpace < pctdiskspace   
+| sort by FreeSpace 
+| render barchart kind=unstacked  
